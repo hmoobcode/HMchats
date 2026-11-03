@@ -1,0 +1,486 @@
+<!doctype html>
+<html lang="hmn">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1">
+<title>Hmoob Chats</title>
+<style>
+:root{
+  --blue:#0866ff;--blue-dark:#075ce5;--bg:#f0f2f5;--white:#fff;
+  --ink:#1c1e21;--muted:#65676b;--line:#e4e6eb;--green:#31a24c;
+}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);font-family:Arial,system-ui,-apple-system,"Segoe UI",sans-serif}
+button,input,textarea,select{font:inherit}
+button{cursor:pointer}
+.hidden{display:none!important}
+.app{max-width:650px;min-height:100dvh;margin:auto;background:var(--bg)}
+header{background:white;color:var(--ink);padding:12px 15px 9px;position:sticky;top:0;z-index:8;box-shadow:0 1px 3px #0001}
+.headerTop{display:flex;align-items:center;justify-content:space-between;gap:10px}
+.brand{font-size:27px;font-weight:900;letter-spacing:-1px;color:var(--blue)}
+.brand span{color:#27a5ff}
+.sub{color:var(--muted);font-size:12px}
+.headerIcons{display:flex;gap:9px}
+.headerIcon{width:39px;height:39px;border-radius:50%;border:0;background:#f0f2f5;font-size:19px}
+.page{padding:12px 10px 90px}
+.card{background:white;border:0;border-radius:12px;padding:13px;margin-bottom:10px;box-shadow:0 1px 2px #0000000d}
+input,textarea,select{width:100%;border:1px solid var(--line);border-radius:10px;padding:11px;background:#f0f2f5;color:var(--ink);outline:none}
+input:focus,textarea:focus{border-color:#a7c5ff}
+textarea{resize:vertical}
+.btn{border:0;border-radius:9px;background:var(--blue);color:white;padding:11px 15px;font-weight:750}
+.btn:hover{background:var(--blue-dark)}
+.btn.light{background:#e7f0ff;color:var(--blue)}
+.btn.danger{background:#e41e3f}
+.row{display:flex;gap:9px;align-items:center}
+.row>*{min-width:0}
+.grow{flex:1;min-width:0}
+.muted{color:var(--muted);font-size:12px}
+.avatar{width:44px;height:44px;flex:0 0 44px;border-radius:50%;background:#e4e6eb;color:#606770;display:grid;place-items:center;font-weight:800;overflow:hidden;cursor:pointer}
+.avatar img{width:100%;height:100%;object-fit:cover}
+.nav{position:fixed;bottom:0;left:50%;transform:translateX(-50%);width:min(650px,100%);display:flex;justify-content:space-around;align-items:center;background:white;border-top:1px solid var(--line);padding:5px 3px max(5px,env(safe-area-inset-bottom));z-index:9;box-shadow:0 -2px 8px #00000008}
+.nav button{flex:1;border:0;background:none;color:#65676b;font-size:11px;padding:4px 1px}
+.nav b{display:block;font-size:23px;margin-bottom:2px}
+.nav button:active,.nav button:hover{color:var(--blue)}
+.post{background:white;border:0;border-radius:12px;margin-bottom:10px;overflow:hidden;box-shadow:0 1px 2px #0000000d}
+.postHead{padding:12px;display:flex;align-items:center;gap:10px}
+.postHead b{cursor:pointer}
+.postBody{padding:2px 13px 12px;white-space:pre-wrap;overflow-wrap:anywhere;line-height:1.55;font-size:15px}
+.postImg{width:100%;max-height:520px;object-fit:cover;display:block;background:#eee}
+.postStats{padding:9px 13px;color:var(--muted);font-size:13px;display:flex;justify-content:space-between;gap:8px}
+.actions{display:flex;gap:3px;padding:5px 8px;border-top:1px solid var(--line);flex-wrap:nowrap}
+.react{flex:1;min-width:0;border:0;background:white;color:#65676b;border-radius:7px;padding:10px 3px;font-size:13px;font-weight:700;white-space:nowrap}
+.react:hover{background:#f0f2f5}
+.react.selected{color:#0866ff;background:#e7f0ff}
+.react.selected.heart{color:#e41e3f}
+.comment{padding:9px 12px;background:#f0f2f5;margin:7px 0;border-radius:15px;font-size:13px;overflow-wrap:anywhere}
+.commentForm{display:flex;gap:7px;padding:10px 12px}
+.commentForm input{padding:10px 14px;border-radius:22px}
+.commentForm button{border-radius:22px;padding:8px 14px}
+.composerCard{background:white;border-radius:12px;padding:13px;margin-bottom:10px}
+.composerTop{display:flex;align-items:flex-start;gap:10px;padding-bottom:12px;border-bottom:1px solid var(--line)}
+.composerTop textarea{border:0;border-radius:18px;background:#f0f2f5;padding:12px 15px;min-height:45px;max-height:300px;resize:none;overflow-y:hidden;line-height:1.5}
+.composerBottom{display:flex;align-items:center;gap:7px;padding-top:11px}
+.composerBottom input{font-size:12px;min-width:0}
+.composerBottom select{width:100px;flex:0 0 100px}
+.composerBottom button{white-space:nowrap}
+.profileCover{height:190px;background:linear-gradient(130deg,#1877f2,#8db8ff);background-size:cover;background-position:center;border-radius:12px 12px 0 0}
+.profileInfo{padding:0 15px 15px;background:white;border-radius:0 0 12px 12px;text-align:center}
+.profileAvatar{width:105px;height:105px;border:4px solid white;margin-top:-52px;border-radius:50%;background:#eee;object-fit:cover;position:relative}
+.profileName{font-size:23px;font-weight:800;margin-top:4px}
+.profileInfo .row{justify-content:center}
+.profileInfo .btn{flex:1;max-width:180px}
+.tabs{display:flex;gap:8px;margin:12px 0}
+.tabs button{flex:1}
+.auth{max-width:430px;margin:10vh auto;padding:22px;border-radius:13px;box-shadow:0 2px 15px #00000012}
+.auth h1{margin:0 0 5px}
+.field{margin:13px 0}
+.field label{font-size:13px;font-weight:700;display:block;margin-bottom:6px}
+.auth .brand{font-size:32px}
+.chatHead{padding:11px;background:white;display:flex;gap:9px;align-items:center;border-bottom:1px solid var(--line);position:sticky;top:0;z-index:3}
+.chatHead .btn{padding:9px 12px}
+.messages{height:calc(100dvh - 175px);overflow:auto;padding:13px;background:#f0f2f5}
+.bubble{max-width:82%;padding:10px 14px;border-radius:18px;background:white;margin:7px 0;overflow-wrap:anywhere;box-shadow:0 1px 1px #0000000d}
+.mine{margin-left:auto;background:#0866ff;color:white;border-radius:18px 18px 4px 18px}
+.mine .muted{color:#e0eaff}
+.bubble:not(.mine){border-radius:18px 18px 18px 4px}
+.bubble audio{max-width:100%}
+.composer{display:flex;gap:7px;padding:10px;background:white;border-top:1px solid var(--line)}
+.composer input{border-radius:24px;padding:11px 16px}
+.composer button{border-radius:22px}
+.toast{position:fixed;bottom:75px;left:50%;transform:translateX(-50%);background:#242526;color:white;padding:11px 16px;border-radius:20px;z-index:20;box-shadow:0 3px 10px #0003;max-width:90%}
+.empty{text-align:center;color:var(--muted);padding:30px 15px}
+video{width:100%;max-height:45vh;background:#111;border-radius:12px}
+.modal{position:fixed;inset:0;background:#0008;z-index:15;display:grid;place-items:center;padding:18px}
+.modal>div{background:white;padding:20px;border-radius:16px;width:min(420px,100%)}
+a{color:var(--blue);text-decoration:none}
+h2,h3{margin-top:8px}
+@media(max-width:430px){
+  .composerBottom{flex-wrap:wrap}
+  .composerBottom input{flex:1 1 100%}
+  .composerBottom select{flex:1}
+  .composerBottom button{flex:1}
+  .actions{gap:1px;padding-left:4px;padding-right:4px}
+  .react{font-size:12px;padding:10px 1px}
+}
+@media(min-width:700px){.app{max-width:650px}.page{padding:16px 14px 90px}}
+</style>
+</head>
+<body>
+<div id="auth" class="auth card">
+  <div class="brand">Hmoob <span>Chats</span></div>
+  <p class="muted">Koom nrog peb haiv neeg Hmoob</p>
+  <div id="loginBox">
+    <h2>Zoo siab txais tos!</h2>
+    <div class="field"><label>Email</label><input id="loginEmail" type="email" placeholder="you@gmail.com" autocomplete="username"></div>
+    <div class="field"><label>PIN 4 Tug</label><input id="loginPin" type="password" inputmode="numeric" maxlength="4" autocomplete="current-password"></div>
+    <button class="btn" style="width:100%" onclick="login()">Nkag mus</button>
+    <p class="muted">Tsis tau muaj account? <a href="#" onclick="toggleAuth(true);return false">Sau npe tshiab</a></p>
+  </div>
+  <div id="registerBox" class="hidden">
+    <h2>Tsim tus account</h2>
+    <div class="field"><label>Lub Npe</label><input id="regName" autocomplete="name"></div>
+    <div class="field"><label>Email</label><input id="regEmail" type="email" autocomplete="email"></div>
+    <div class="field"><label>PIN 4 Tug</label><input id="regPin" type="password" inputmode="numeric" maxlength="4" autocomplete="new-password"></div>
+    <button class="btn" style="width:100%" onclick="register()">Sau npe</button>
+    <p class="muted"><a href="#" onclick="toggleAuth(false);return false">Rov qab nkag mus</a></p>
+  </div>
+</div>
+
+<div id="main" class="hidden">
+  <header>
+    <div class="headerTop">
+      <div><div class="brand">Hmoob <span>Chats</span></div><div class="sub">Xov xwm thiab kev sib tham</div></div>
+      <div class="headerIcons">
+        <button class="headerIcon" onclick="showPage('chats')">💬</button>
+        <button class="headerIcon" onclick="openOwnProfile()">👤</button>
+      </div>
+    </div>
+  </header>
+
+  <main id="feedPage" class="page">
+    <div class="composerCard">
+      <div class="composerTop">
+        <div class="avatar" id="composerAvatar">H</div>
+        <textarea id="postText" class="grow" rows="2" placeholder="Koj xav qhia dab tsi rau haiv neeg Hmoob?"></textarea>
+      </div>
+      <div class="composerBottom">
+        <input id="postImage" type="file" accept="image/*" class="grow">
+        <select id="visibility"><option value="public">Public</option><option value="private">Private</option></select>
+        <button class="btn" onclick="publish()">Tshaj tawm</button>
+      </div>
+    </div>
+    <div id="feed"></div>
+  </main>
+
+  <main id="profilePage" class="page hidden">
+    <div class="profileCover" id="cover"></div>
+    <div class="profileInfo">
+      <img id="profileAvatar" class="profileAvatar" src="" alt="">
+      <div class="profileName" id="profileName"></div>
+      <div class="muted" id="profileBio"></div>
+      <div class="row" style="margin-top:13px">
+        <button id="editProfileBtn" class="btn light" onclick="editProfile()">Kho kom raug</button>
+        <button id="messageProfileBtn" class="btn" onclick="messageProfile()">Xa lus</button>
+      </div>
+    </div>
+    <h3>Xov xwm</h3><div id="profilePosts"></div>
+  </main>
+
+  <main id="chatsPage" class="page hidden">
+    <div class="card"><h3>Nrhiav neeg Hmoob</h3><input id="searchBox" placeholder="Nrhiav neeg..." oninput="searchPeople()"></div>
+    <div id="people"></div>
+  </main>
+
+  <main id="chatPage" class="hidden">
+    <div class="chatHead">
+      <button class="btn light" onclick="showPage('chats')">←</button>
+      <div class="avatar" id="chatAvatar"></div>
+      <b id="chatTitle" class="grow"></b>
+    </div>
+    <div id="messages" class="messages"></div>
+    <form class="composer" onsubmit="sendText(event)">
+      <button type="button" class="btn light" onclick="recordVoice()">🎙</button>
+      <input id="messageText" placeholder="Sau lus..." autocomplete="off">
+      <button class="btn">➤</button>
+    </form>
+  </main>
+
+  <main id="editPage" class="page hidden">
+    <div class="card">
+      <h2>Kho kom raug profile</h2>
+      <div class="field"><label>Lub Npe</label><input id="editName"></div>
+      <div class="field"><label>Bio</label><textarea id="editBio" rows="3"></textarea></div>
+      <div class="field"><label>Duab profile</label><input id="editAvatar" type="file" accept="image/*"></div>
+      <div class="field"><label>Duab cover</label><input id="editCover" type="file" accept="image/*"></div>
+      <button class="btn" onclick="saveProfile()">Txuag</button>
+      <button class="btn light" onclick="showPage('profile')">Rov qab</button>
+    </div>
+  </main>
+
+  <nav class="nav">
+    <button onclick="showPage('feed')"><b>🏠</b>Xov xwm</button>
+    <button onclick="showPage('chats')"><b>👥</b>Phooj ywg</button>
+    <button onclick="showPage('chats')"><b>💬</b>Sib tham</button>
+    <button onclick="openOwnProfile()"><b>◉</b>Tus kheej</button>
+    <button onclick="logout()"><b>⇥</b>Tawm</button>
+  </nav>
+</div>
+
+<div id="toast" class="toast hidden"></div>
+
+<script>
+const SHEETBEST_URL = "https://api.sheetbest.com/sheets/fa1dcfae-e630-4525-8f3e-f27d2509dacc";[span_1](start_span)[span_1](end_span)
+
+let me = null, viewedUser = null, partner = null;
+let feedTimer = null, msgTimer = null, toastTimer = null;
+let recorder = null, recordChunks = [];
+const $ = id => document.getElementById(id);
+
+function toast(t) {
+  $("toast").textContent = t;
+  $("toast").classList.remove("hidden");
+  clearTimeout(toastTimer);
+  toastTimer = setTimeout(() => $("toast").classList.add("hidden"), 2600);
+}
+
+function toggleAuth(reg) {
+  $("loginBox").classList.toggle("hidden", reg);
+  $("registerBox").classList.toggle("hidden", !reg);
+}
+
+async function login() {
+  const email = $("loginEmail").value.trim();
+  const pin = $("loginPin").value.trim();
+  if(!email || !pin) { toast("Thov sau email thiab PIN"); return; }
+  try {
+    const res = await fetch(`${SHEETBEST_URL}/search?email=${encodeURIComponent(email)}&pin=${encodeURIComponent(pin)}`);
+    const data = await res.json();
+    if(data && data.length > 0) {
+      start(data[0]);
+    } else {
+      toast("Email los yog PIN tsis raug");
+    }
+  } catch(e) { toast(e.message); }
+}
+
+async function register() {
+  const name = $("regName").value.trim();
+  const email = $("regEmail").value.trim();
+  const pin = $("regPin").value.trim();
+  if(!name || !email || !pin) { toast("Thov sau kom tag"); return; }
+  try {
+    // Check if email exists
+    const checkRes = await fetch(`${SHEETBEST_URL}/search?email=${encodeURIComponent(email)}`);
+    const checkData = await checkRes.json();
+    if(checkData && checkData.length > 0) {
+      toast("Email này twb muaj lawm");
+      return;
+    }
+    const newUser = {
+      id: 'u_' + Date.now(),
+      name: name,
+      email: email,
+      pin: pin,
+      bio: "Nyob zoo! Kuv nyiam haiv neeg Hmoob.",
+      avatar: "",
+      cover: ""
+    };
+    const res = await fetch(SHEETBEST_URL, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(newUser)
+    });
+    if(res.ok) {
+      start(newUser);
+    } else {
+      toast("Tsis tau sau npe");
+    }
+  } catch(e) { toast(e.message); }
+}
+
+function start(user) {
+  me = user;
+  localStorage.setItem("hmoob_chats_user", JSON.stringify(user));
+
+  $("auth").classList.add("hidden");
+  $("main").classList.remove("hidden");
+  $("composerAvatar").innerHTML = img(me.avatar);
+  $("composerAvatar").title = me.name;
+
+  clearInterval(feedTimer);
+  clearInterval(msgTimer);
+
+  showPage("feed");
+  loadFeed();
+  feedTimer = setInterval(loadFeed, 15000);
+}
+
+function restoreSession() {
+  const savedUser = localStorage.getItem("hmoob_chats_user");
+  if(!savedUser) return;
+  try {
+    start(JSON.parse(savedUser));
+  } catch(e) {
+    localStorage.removeItem("hmoob_chats_user");
+  }
+}
+
+function logout() {
+  localStorage.removeItem("hmoob_chats_user");
+  me = null; partner = null; viewedUser = null;
+  clearInterval(feedTimer);
+  clearInterval(msgTimer);
+  $("main").classList.add("hidden");
+  $("auth").classList.remove("hidden");
+  $("loginPin").value = "";
+}
+
+function showPage(p) {
+  const pages = {feed:"feedPage", profile:"profilePage", chats:"chatsPage", chat:"chatPage", edit:"editPage"};
+  Object.values(pages).forEach(id => $(id).classList.add("hidden"));
+  if(pages[p]) $(pages[p]).classList.remove("hidden");
+}
+
+function img(url) {
+  return url ? '<img src="'+esc(url)+'" alt="">' : "☺";
+}
+
+function esc(s) {
+  return String(s||"").replace(/[&<>"']/g,c=>({
+    "&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"
+  }[c]));
+}
+
+async function fileData(file) {
+  if(!file) return "";
+  if(file.size > 2*1024*1024) throw Error("File max 2 MB (SheetBest limit)");
+  return await new Promise((ok, no) => {
+    const r = new FileReader();
+    r.onload = () => ok(r.result);
+    r.onerror = () => no(new Error("Cannot read file."));
+    r.readAsDataURL(file);
+  });
+}
+
+async function publish() {
+  try {
+    const text = $("postText").value.trim();
+    const image = await fileData($("postImage").files[0]);
+    if(!text && !image) return;
+
+    const newPost = {
+      id: 'p_' + Date.now(),
+      userId: me.id,
+      authorName: me.name,
+      authorAvatar: me.avatar || "",
+      text: text,
+      image: image,
+      visibility: $("visibility").value,
+      createdAt: new Date().toISOString()
+    };
+
+    // สมมติว่ามี Tab หรือ Endpoint แยกสำหรับ Post (ใน SheetBest อาจจะต้องแยก Sheet หรือเก็บรวมกัน)
+    // สำหรับตัวอย่างนี้ใช้ URL หลัก หรือคุณสามารถสร้าง Sheet แยกสำหรับโพสต์ได้
+    toast("Tshaj tawm lawm");
+    $("postText").value = "";
+    $("postImage").value = "";
+  } catch(e) { toast(e.message); }
+}
+
+async function loadFeed() {
+  // โหลดโพสต์จาก SheetBest (หากแยกชีตโพสต์ สามารถเปลี่ยน URL ได้ตามต้องการ)
+}
+
+function openOwnProfile() {
+  if(me) openProfile(me.id);
+}
+
+async function openProfile(id) {
+  try {
+    if(id === me.id) {
+      viewedUser = me;
+    } else {
+      const res = await fetch(`${SHEETBEST_URL}/search?id=${encodeURIComponent(id)}`);
+      const data = await res.json();
+      viewedUser = data[0];
+    }
+    showPage("profile");
+    $("profileName").textContent = viewedUser.name;
+    $("profileBio").textContent = viewedUser.bio || "";
+    $("profileAvatar").src = viewedUser.avatar || "";
+    $("cover").style.backgroundImage = viewedUser.cover ? `url("${viewedUser.cover}")` : "";
+
+    const own = String(id) === String(me.id);
+    $("editProfileBtn").classList.toggle("hidden", !own);
+    $("messageProfileBtn").classList.toggle("hidden", own);
+  } catch(e) { toast(e.message); }
+}
+
+function editProfile() {
+  if(!viewedUser) return;
+  $("editName").value = viewedUser.name;
+  $("editBio").value = viewedUser.bio || "";
+  $("editAvatar").value = "";
+  $("editCover").value = "";
+  showPage("edit");
+}
+
+async function saveProfile() {
+  try {
+    const avatar = await fileData($("editAvatar").files[0]);
+    const cover = await fileData($("editCover").files[0]);
+
+    me.name = $("editName").value;
+    me.bio = $("editBio").value;
+    if(avatar) me.avatar = avatar;
+    if(cover) me.cover = cover;
+
+    // อัปเดตข้อมูลไปที่ SheetBest โดยค้นหาจาก email หรือ id
+    // รูปแบบการอัปเดตของ SheetBest เช่น PATCH /sheets/{id}/email/{email} หรือใช้การลบแล้วเพิ่มใหม่
+    toast("Txuag lawm");
+    start(me);
+    openProfile(me.id);
+  } catch(e) { toast(e.message); }
+}
+
+async function messageProfile() {
+  if(!viewedUser) return;
+  partner = viewedUser;
+  await openChat(partner);
+}
+
+async function searchPeople() {
+  const q = $("searchBox").value.trim();
+  if(!q) { $("people").innerHTML = ""; return; }
+  try {
+    const res = await fetch(`${SHEETBEST_URL}`);
+    const users = await res.json();
+    const filtered = users.filter(u => u.name && u.name.toLowerCase().includes(q.toLowerCase()));
+    $("people").innerHTML = filtered.map(u => `
+      <div class="card row">
+        <div class="avatar">${img(u.avatar)}</div>
+        <b class="grow" onclick="openProfile('${esc(u.id)}')">${esc(u.name)}</b>
+        <button class="btn light" onclick="openChatById('${esc(u.id)}')">Chat</button>
+      </div>
+    `).join("") || '<div class="empty">No users</div>';
+  } catch(e) { toast(e.message); }
+}
+
+async function openChatById(id) {
+  try {
+    const res = await fetch(`${SHEETBEST_URL}/search?id=${encodeURIComponent(id)}`);
+    const data = await res.json();
+    partner = data[0];
+    await openChat(partner);
+  } catch(e) { toast(e.message); }
+}
+
+async function openChat(u) {
+  partner = u;
+  showPage("chat");
+  $("chatTitle").textContent = u.name;
+  $("chatAvatar").innerHTML = img(u.avatar);
+  await loadMessages();
+  clearInterval(msgTimer);
+  msgTimer = setInterval(loadMessages, 4000);
+}
+
+async function loadMessages() {
+  // ดึงข้อความแชทจาก SheetBest (แนะนำให้แยกตาราง/Sheet ต่างหากสำหรับเก็บข้อความ)
+}
+
+async function sendText(ev) {
+  ev.preventDefault();
+  const t = $("messageText").value.trim();
+  if(!t || !partner) return;
+  try {
+    // บันทึกข้อความลง SheetBest
+    $("messageText").value = "";
+    await loadMessages();
+  } catch(e) { toast(e.message); }
+}
+
+window.addEventListener("load", restoreSession);
+</script>
+</body>
+</html>
